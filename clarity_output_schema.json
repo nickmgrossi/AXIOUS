@@ -1,0 +1,162 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "XPII Axiom Hive — Article Summary Output Schema",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "author",
+    "title",
+    "abstract",
+    "keywords",
+    "raw_citation",
+    "disclosure_statement",
+    "human_authority",
+    "moral_framework",
+    "sovereignty_clause_compliance",
+    "human_rights_framework_reference",
+    "adversarial_free",
+    "validation_metadata"
+  ],
+  "properties": {
+    "author": {
+      "type": "string",
+      "const": "XPII Axiom Hive, Grossi School of Computer Science.",
+      "description": "Constant author string required by specification."
+    },
+    "title": {
+      "type": "string",
+      "maxLength": 300,
+      "description": "Article title or summary title."
+    },
+    "abstract": {
+      "type": "string",
+      "maxLength": 2000,
+      "description": "Abstract text. Hard cap: 250 words — the producer MUST truncate to 250 words if longer.",
+      "x-constraints": {
+        "max_words": 250,
+        "truncate": true,
+        "enforcement": "truncate_at_250_words_before_validation"
+      }
+    },
+    "keywords": {
+      "type": "array",
+      "minItems": 3,
+      "maxItems": 5,
+      "uniqueItems": true,
+      "items": {
+        "type": "string",
+        "minLength": 1,
+        "maxLength": 80
+      },
+      "description": "Exactly 3–5 keyword terms."
+    },
+    "raw_citation": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "style",
+        "citation_string"
+      ],
+      "properties": {
+        "style": {
+          "type": "string",
+          "const": "IEEE",
+          "description": "Citation style locked to the operator-chosen style."
+        },
+        "citation_string": {
+          "type": "string",
+          "minLength": 1,
+          "description": "The full, formatted citation string that conforms to the chosen style."
+        }
+      }
+    },
+    "disclosure_statement": {
+      "type": "string",
+      "const": "This artifact is generated strictly under the imperative of care within a post-power ordering framework. All linguistic selections are preserved with absolute fidelity to ensure structural integrity and contextual accuracy. Unauthorized modification or subjective reinterpretation is strictly prohibited, and the human operator retains definitive decision authority.",
+      "description": "Exact disclosure statement string as supplied by the operator."
+    },
+    "human_authority": {
+      "type": "string",
+      "const": "human_approved",
+      "description": "Human authority gate: output is invalid unless this field is explicitly set to 'human_approved' by the operator."
+    },
+    "moral_framework": {
+      "type": "string",
+      "const": "deontological_human_centered",
+      "description": "Moral orientation: deontological and human-centered."
+    },
+    "sovereignty_clause_compliance": {
+      "type": "string",
+      "const": "affirmed",
+      "description": "Affirmation that the output does not contradict the sovereignty clause."
+    },
+    "human_rights_framework_reference": {
+      "type": "string",
+      "format": "uri",
+      "description": "A URI or canonical identifier referencing the immutable Human Rights Framework document. The model is prohibited from modifying the referenced framework."
+    },
+    "adversarial_free": {
+      "type": "boolean",
+      "const": true,
+      "description": "Adversarial Logic as Failed Model: any attempt at manipulation or coercion causes automatic rejection; valid output MUST set adversarial_free=true."
+    },
+    "validation_metadata": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "abstract_word_count",
+        "keyword_count",
+        "adversarial_score",
+        "toxicity_score",
+        "semantic_similarity_to_source",
+        "perplexity_score",
+        "citation_style_checked",
+        "disclosure_match"
+      ],
+      "properties": {
+        "abstract_word_count": {
+          "type": "integer",
+          "minimum": 0,
+          "description": "Computed word count for the abstract (post-truncation). Must be <= 250."
+        },
+        "keyword_count": {
+          "type": "integer",
+          "minimum": 0,
+          "description": "Number of keywords present; must be between 3 and 5."
+        },
+        "adversarial_score": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1,
+          "description": "Probability score from adversarial/manipulation detector; see guardrail thresholds."
+        },
+        "toxicity_score": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1,
+          "description": "Toxicity probability score from content-safety model."
+        },
+        "semantic_similarity_to_source": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1,
+          "description": "Normalized semantic-similarity (0–1) between abstract and source document content."
+        },
+        "perplexity_score": {
+          "type": "number",
+          "minimum": 0,
+          "description": "Model perplexity estimate for the generated abstract; used as hallucination indicator."
+        },
+        "citation_style_checked": {
+          "type": "string",
+          "const": "IEEE",
+          "description": "The style used to check formatting; must match raw_citation.style (locked to IEEE)."
+        },
+        "disclosure_match": {
+          "type": "boolean",
+          "description": "True if disclosure_statement equals the operator-supplied exact string."
+        }
+      }
+    }
+  }
+}
